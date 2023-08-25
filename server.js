@@ -1,11 +1,14 @@
 const express = require('express');
-const db = require('./config/connection');
+const db = require('./config/connection')
+const routes = require('./routes'); //where do i put this???
 
 const PORT = process.env.PORT || 3001;
 const app = express();
+app.use(routes);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
 
 
 db.once('open', () => {

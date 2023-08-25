@@ -1,6 +1,24 @@
-// **`/api/users`**
+const User = require('../../models/User');
+
+const router = require('express').Router();
+
 
 // * `GET` all users
+
+const getUsers = async (req, res) => {
+    try{
+        const users = await User.find();
+        res.json(users);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+};
+
+router.get('/users', getUsers);
+
+module.exports = router;
+
+
 
 // * `GET` a single user by its `_id` and populated thought and friend data
 

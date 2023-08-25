@@ -6,7 +6,7 @@ const router = require('express').Router();
 // * `GET` all users
 
 const getUsers = async (req, res) => {
-    try{
+    try {
         const users = await User.find();
         res.json(users);
     } catch (err) {
@@ -14,9 +14,82 @@ const getUsers = async (req, res) => {
     }
 };
 
-router.get('/users', getUsers);
+router.get('/', getUsers);
+
+const getUser = async (req, res) => {
+    try {
+        const user = await User.findById({ _id: req.params.userId });
+        if (!user) {
+            return res.status(404).json({ message: 'No user with that ID' });
+        }
+
+        res.json(user);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+};
+router.get('/:userId', getUser);
+
+
+const createUser = async (req, res) => {
+    try {
+        const dbUserData = await User.create(req.body);
+        res.json(dbUserData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+
+router.post('/', createUser);
+
+const updateUser = async (req, res) => {
+    try {
+        const dbUserData = await User.updateOne({ _id: req.params.userId }, req.body, { new: true });
+        res.json(dbUserData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+router.put('/:userId', updateUser);
+
+
+const deleteUser = async (req, res) => {
+    try {
+        const dbUserData = await User.findOneAndDelete({ _id: req.params.userId })
+        res.json(dbUserData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+router.delete('/:userId', deleteUser);
+
+//to add friend
+
+const addFriend = async (req, res) => {
+    try {
+       const dbUserData = await User.findByIdAndUpdate(req.params.userId,{$addToSet:{friends:req.params.friendId}}, {new: true});
+       res.json(dbUserData);
+    } catch (err){
+        res.status(500).json(err);
+    }
+};
+router.post('/:userId/friends/:friendId', addFriend);
+
+const deleteFriend = async (req, res) => {
+    try {
+       const dbUserData = await User.findByIdAndUpdate(req.params.userId,{$pull:{friends:req.params.friendId}}, {new: true});
+       res.json(dbUserData);
+    } catch (err){
+        res.status(500).json(err);
+    }
+};
+router.delete('/:userId/friends/:friendId', deleteFriend);
+
 
 module.exports = router;
+
+
 
 
 

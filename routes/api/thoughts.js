@@ -1,5 +1,28 @@
+const Thought = require('../../models/Thought');
 
+const router = require('express').Router();
 // **`/api/thoughts`**
+
+//
+const addReaction = async (req, res) => {
+    try {
+       const dbThoughtData = await Thought.findByIdAndUpdate(req.params.thoughtId,{$addToSet:{reactions:req.body}}, {new: true});
+       res.json(dbThoughtData);
+    } catch (err){
+        res.status(500).json(err);
+    }
+};
+router.post('/:thoughtId/reactions/', addReaction);
+
+const deleteReaction = async (req, res) => {
+    try {
+       const dbThoughtData = await Thought.findByIdAndUpdate(req.params.thoughtId,{$pull:{reactions:{_id: req.params.reactionId}}}, {new: true});
+       res.json(dbThoughtData);
+    } catch (err){
+        res.status(500).json(err);
+    }
+};
+router.post('/:thoughtId/reactions/:reactionId', deleteReaction);
 
 // * `GET` to get all thoughts
 

@@ -3,9 +3,84 @@ const Thought = require('../../models/Thought');
 const router = require('express').Router();
 // **`/api/thoughts`**
 
-//
+//Get All Thoughts
+
+const getThoughts = async(req,res) => {
+    try{
+        const thoughts = await Thought.find();
+        res.json(thoughts);
+    } catch (err) {
+        res.status(500).json(err)
+    }
+};
+router.get('/', getThoughts);
+
+//Get A Single Thought
+
+const getThought = async (req, res) => {
+    try {
+        const thought = await Thought.findById({ _id: req.params.thoughtId });
+        if (!thought) {
+            return res.status(404).json({ message: 'No thought with that ID' });
+        }
+
+        res.json(thought);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+
+};
+router.get('/:thoughtId', getThought);
+
+
+// Post New Thought
+
+const createThought = async (req, res) => {
+    try {
+        const dbThoughtData = await Thought.create(req.body);
+        res.json(dbThoughtData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+
+router.post('/', createThought);
+
+
+//Update Thought
+
+const updateThought = async (req, res) => {
+    try {
+        const dbThoughtData = await Thought.updateOne({ _id: req.params.thoughtId }, req.body, { new: true });
+        res.json(dbThoughtData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+router.put('/:thoughtId', updateThought);
+
+
+
+//Delete Thought
+
+const deleteThought = async (req, res) => {
+    try {
+        const dbThoughtData = await Thought.findOneAndDelete({ _id: req.params.thoughtId })
+        res.json(dbThoughtData);
+    } catch (err) {
+        res.status(500).json(err);
+    }
+};
+router.delete('/:thoughtId', deleteThought);
+
+
+
+//Post a Reactiong to a Thought
+
 const addReaction = async (req, res) => {
     try {
+        console.log('thoughtId', req.params.thoughtId);
+        console.log('Reaction Body:', req.body);
        const dbThoughtData = await Thought.findByIdAndUpdate(req.params.thoughtId,{$addToSet:{reactions:req.body}}, {new: true});
        res.json(dbThoughtData);
     } catch (err){
@@ -13,6 +88,9 @@ const addReaction = async (req, res) => {
     }
 };
 router.post('/:thoughtId/reactions/', addReaction);
+
+
+// Delete a Reaction to a Thought
 
 const deleteReaction = async (req, res) => {
     try {
@@ -23,6 +101,8 @@ const deleteReaction = async (req, res) => {
     }
 };
 router.post('/:thoughtId/reactions/:reactionId', deleteReaction);
+
+module.exports = router;
 
 // * `GET` to get all thoughts
 

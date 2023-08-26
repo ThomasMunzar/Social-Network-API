@@ -94,13 +94,14 @@ router.post('/:thoughtId/reactions/', addReaction);
 
 const deleteReaction = async (req, res) => {
     try {
+       
        const dbThoughtData = await Thought.findByIdAndUpdate(req.params.thoughtId,{$pull:{reactions:{_id: req.params.reactionId}}}, {new: true});
        res.json(dbThoughtData);
     } catch (err){
         res.status(500).json(err);
     }
 };
-router.post('/:thoughtId/reactions/:reactionId', deleteReaction);
+router.delete('/:thoughtId/reactions/:reactionId', deleteReaction);
 
 module.exports = router;
 

@@ -48,7 +48,7 @@ const thoughtSchema = new Schema({
         required: true
     },
 
-    reaction: [reactionSchema]
+    reactions: [reactionSchema]
 });
 
 // Create a virtual called `reactionCount` that retrieves the length of the thought's `reactions` array field on query.
